@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsistentHashBoundedLoads", "ConsistentHashBoundedLoads.csproj", "{29DA4CC6-77FA-4302-A883-B9B2E23DDBBD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29DA4CC6-77FA-4302-A883-B9B2E23DDBBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29DA4CC6-77FA-4302-A883-B9B2E23DDBBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29DA4CC6-77FA-4302-A883-B9B2E23DDBBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29DA4CC6-77FA-4302-A883-B9B2E23DDBBD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
