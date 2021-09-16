@@ -52,7 +52,7 @@ namespace ConsistentHashUnitTests
                 new ("4", 300)
             };
             var ch = new ConsistentHash(servers);
-            ch.InflightRequests = 475;
+            ch.InflightRequests = 650;
             ch.Load = 1.1;
             Assert.Equal("4", ch.Next("blalba", "bloblo").id);
             Assert.NotEqual(300, ch.NextBoundedTryNext("blalba", "bloblo").inflightRequest);
