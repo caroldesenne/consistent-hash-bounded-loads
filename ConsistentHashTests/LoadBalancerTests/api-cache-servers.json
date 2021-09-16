@@ -1,0 +1,79 @@
+{
+  "servers": [
+    {
+      "id": "1",
+      "replicas": 100,
+      "endpoint": "http://172.16.35.186"
+    },
+    {
+      "id": "2",
+      "replicas": 100,
+      "endpoint": "http://172.16.42.2"
+    },
+    {
+      "id": "3",
+      "replicas": 100,
+      "endpoint": "http://172.16.55.90"
+    },
+    {
+      "id": "4",
+      "replicas": 100,
+      "endpoint": "http://172.16.38.131"
+    },
+    {
+      "id": "5",
+      "replicas": 100,
+      "endpoint": "http://172.16.61.56"
+    },
+    {
+      "id": "6",
+      "replicas": 100,
+      "endpoint": "http://172.16.20.12"
+    },
+    {
+      "id": "7",
+      "replicas": 100,
+      "endpoint": "http://172.16.23.49"
+    },
+    {
+      "id": "8",
+      "replicas": 100,
+      "endpoint": "http://172.16.38.92"
+    },
+    {
+      "id": "9",
+      "replicas": 100,
+      "endpoint": "http://172.16.48.62"
+    },
+    {
+      "id": "10",
+      "replicas": 100,
+      "endpoint": "http://172.16.24.27"
+    },
+    {
+      "id": "11",
+      "replicas": 100,
+      "endpoint": "http://172.16.60.180"
+    },
+    {
+      "id": "20",
+      "replicas": 100,
+      "endpoint": "http://172.16.51.119"
+    },
+    {
+      "id": "21",
+      "replicas": 100,
+      "endpoint": "http://172.16.20.183"
+    },
+    {
+      "id": "22",
+      "replicas": 100,
+      "endpoint": "http://172.16.42.133"
+    },
+    {
+      "id": "23",
+      "replicas": 100,
+      "endpoint": "http://172.16.26.28"
+    }
+  ]
+}
