@@ -15,12 +15,10 @@ namespace ConsistentHashUnitTests
                 new ("3", 100),
                 new ("4", 125)
             };
-            var ch = new ConsistentHash(servers);
-            ch.InflightRequests = 425;
-            ch.Load = 1.1;
-            Assert.Equal("4", ch.Next("blalba", "bloblo").id);
-            Assert.Equal(100, ch.NextBoundedTryNext("blalba", "bloblo").inflightRequest);
-            Assert.Equal(100, ch.NextBoundedTryHash("blalba", "bloblo").inflightRequest);
+            var load = 1.1;
+            Assert.Equal("4", ConsistentHash.Next(servers, load, "blalba", "bloblo", "vanilla").id);
+            Assert.Equal(100, ConsistentHash.Next(servers, load, "blalba", "bloblo", "google").inflightRequest);
+            Assert.Equal(100, ConsistentHash.Next(servers, load, "blalba", "bloblo", "jumps").inflightRequest);
         }
         
         [Fact]
@@ -33,12 +31,10 @@ namespace ConsistentHashUnitTests
                 new ("3", 125),
                 new ("4", 125)
             };
-            var ch = new ConsistentHash(servers);
-            ch.InflightRequests = 475;
-            ch.Load = 1.1;
-            Assert.Equal("4", ch.Next("blalba", "bloblo").id);
-            Assert.NotEqual(100, ch.NextBoundedTryNext("blalba", "bloblo").inflightRequest);
-            Assert.NotEqual(100, ch.NextBoundedTryHash("blalba", "bloblo").inflightRequest);
+            var load = 1.1;
+            Assert.Equal("4", ConsistentHash.Next(servers, load, "blalba", "bloblo", "vanilla").id);
+            Assert.NotEqual(100, ConsistentHash.Next(servers, load, "blalba", "bloblo", "google").inflightRequest);
+            Assert.NotEqual(100, ConsistentHash.Next(servers, load, "blalba", "bloblo", "jumps").inflightRequest);
         }
         
         [Fact]
@@ -51,12 +47,10 @@ namespace ConsistentHashUnitTests
                 new ("3", 125),
                 new ("4", 300)
             };
-            var ch = new ConsistentHash(servers);
-            ch.InflightRequests = 650;
-            ch.Load = 1.1;
-            Assert.Equal("4", ch.Next("blalba", "bloblo").id);
-            Assert.NotEqual(300, ch.NextBoundedTryNext("blalba", "bloblo").inflightRequest);
-            Assert.NotEqual(300, ch.NextBoundedTryHash("blalba", "bloblo").inflightRequest);
+            var load = 1.1;
+            Assert.Equal("4", ConsistentHash.Next(servers, load, "blalba", "bloblo", "vanilla").id);
+            Assert.NotEqual(300, ConsistentHash.Next(servers, load, "blalba", "bloblo", "google").inflightRequest);
+            Assert.NotEqual(300, ConsistentHash.Next(servers, load, "blalba", "bloblo", "jumps").inflightRequest);
         }
     }
 }

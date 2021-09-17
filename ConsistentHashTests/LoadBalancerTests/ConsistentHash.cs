@@ -6,16 +6,12 @@ using System.Text;
 
 namespace LoadBalancerTests
 {
-    public class ApiCacheServers
-    {
-        public Server[] servers { get; set; }
-    }
 
     public class Server
     {
-        public string id { get; set; }
-        public int inflightRequest { get; set; }
-        public int replicas { get; set; }
+        public string id { get; }
+        public int inflightRequest { get; }
+        public int replicas { get; }
         public Uri endpoint { get; set; }
 
         public Server(string id, int inflightRequest)
@@ -28,98 +24,64 @@ namespace LoadBalancerTests
     
     public class ConsistentHash
     {
-        public readonly Server[] Servers;
-        public int InflightRequests = 0;
-        public double Load = 1.10;
-        private readonly (uint Hashcode, Server Server)[] _ring;
-
-        public ConsistentHash(Server[] servers)
+        public static Server Next(Server[] servers, double load, string host, string pathAndQuery, string mode)
         {
-            InflightRequests = 0;
-            Servers = servers;
-            _ring =
+            var ring =
                 servers
                     .OrderBy(x => x.id)
                     .SelectMany(server =>
                         Enumerable.Range(0, server.replicas)
                             .Select(i => (Hashcode: MurmurHash2.Hash(server.id, $"{i}"), server)))
                     .OrderBy(x => x.Hashcode).ToArray();
-        }
-
-        public double AverageLoad()
-        {
-            return (InflightRequests * Load) / (double) Servers.Length;
-        }
-
-        public Server NextBoundedTryHash(string host, string pathAndQuery)
-        {
-            var ring = _ring;
-            if (ring.Length == 0)
-                return null;
-            if (ring.Length == 1)
-                return ring[0].Server;
-
-            var hash = MurmurHash2.Hash(host, pathAndQuery);
+            var inflight = servers.Select(x => x.inflightRequest).Sum();
+            var avg = (inflight * load) / (double) servers.Length;
             
-            var j = 0;
-            var avg = AverageLoad();
-            var i = Index(hash);
-            while (ring[i].Server.inflightRequest > avg)
-            {
-                if (j == ring.Length)
-                    throw new Exception("No Servers with enough capacity");
-                j++;
-                hash = MurmurHash2.Hash($"{hash}", $"{j}");
-                i = Index(hash);
-            }
+            if (ring.Length == 0)
+                return null;
+            if (ring.Length == 1)
+                return ring[0].server;
             
-            //ring[i].Server.inflightRequest++;
-            //InflightRequests++;
-            return ring[i].Server;
-        }
-
-        public Server NextBoundedTryNext(string host, string pathAndQuery)
-        {
-            var ring = _ring;
-            if (ring.Length == 0)
-                return null;
-            if (ring.Length == 1)
-                return ring[0].Server;
-
             var hash = MurmurHash2.Hash(host, pathAndQuery);
-            var i = Index(hash);
-            var count = 0;
-            var avg = AverageLoad();
-            while (ring[i].Server.inflightRequest > avg)
+
+            if (mode == "vanilla")
             {
-                if (count > ring.Length)
-                    throw new Exception("No Servers with enough capacity");
-                i++;
-                if (i == ring.Length)
-                    i = 0;
-                count++;
+                var i = Index(ring, hash);
+                return ring[i].server;
             }
-
-            //ring[i].Server.inflightRequest++;
-            //InflightRequests++;
-            return ring[i].Server;
+            if (mode == "google")
+            {
+                var i = Index(ring, hash);
+                var count = 0;
+                while (ring[i].server.inflightRequest > avg)
+                {
+                    if (count > ring.Length)
+                        throw new Exception("No Servers with enough capacity");
+                    i++;
+                    if (i == ring.Length)
+                        i = 0;
+                    count++;
+                }
+                return ring[i].server;
+            }
+            if (mode == "jumps")
+            {
+                var j = 0;
+                var i = Index(ring, hash);
+                while (ring[i].server.inflightRequest > avg)
+                {
+                    if (j == ring.Length)
+                        throw new Exception("No Servers with enough capacity");
+                    j++;
+                    hash = MurmurHash2.Hash($"{hash}", $"{j}");
+                    i = Index(ring, hash);
+                }
+                return ring[i].server;
+            }
+            return null;
         }
-
-        public Server Next(string host, string pathAndQuery)
+        
+        public static int Index((uint Hashcode, Server Server)[] ring, uint hash)
         {
-            var ring = _ring;
-            if (ring.Length == 0)
-                return null;
-            if (ring.Length == 1)
-                return ring[0].Server;
-
-            var hash = MurmurHash2.Hash(host, pathAndQuery);
-            return ring[Index(hash)].Server;
-        }
-
-        public int Index(uint hash)
-        {
-            var ring = _ring;
             var begin = 0;
             var end = ring.Length - 1;
 
