@@ -50,34 +50,46 @@ namespace LoadBalancerTests
             }
             if (mode == "google")
             {
-                var i = Index(ring, hash);
-                var count = 0;
-                while (ring[i].server.inflightRequest > avg)
-                {
-                    if (count > ring.Length)
-                        throw new Exception("No Servers with enough capacity");
-                    i++;
-                    if (i == ring.Length)
-                        i = 0;
-                    count++;
-                }
+                var i = IndexGoogle(ring, hash, avg);
                 return ring[i].server;
             }
             if (mode == "jumps")
             {
-                var j = 0;
-                var i = Index(ring, hash);
-                while (ring[i].server.inflightRequest > avg)
-                {
-                    if (j == ring.Length)
-                        throw new Exception("No Servers with enough capacity");
-                    j++;
-                    hash = MurmurHash2.Hash($"{hash}", $"{j}");
-                    i = Index(ring, hash);
-                }
+                var i = IndexJumps(ring, hash, avg);
                 return ring[i].server;
             }
             return null;
+        }
+
+        public static int IndexGoogle((uint Hashcode, Server Server)[] ring, uint hash, double avg)
+        {
+            var i = Index(ring, hash);
+            var count = 0;
+            while (ring[i].Server.inflightRequest > avg)
+            {
+                if (count > ring.Length)
+                    throw new Exception("No Servers with enough capacity");
+                i++;
+                if (i == ring.Length)
+                    i = 0;
+                count++;
+            }
+            return i;
+        }
+        
+        public static int IndexJumps((uint Hashcode, Server Server)[] ring, uint hash, double avg)
+        {
+            var j = 0;
+            var i = Index(ring, hash);
+            while (ring[i].Server.inflightRequest > avg)
+            {
+                if (j == ring.Length)
+                    throw new Exception("No Servers with enough capacity");
+                j++;
+                hash = MurmurHash2.Hash($"{hash}", $"{j}");
+                i = Index(ring, hash);
+            }
+            return i;
         }
         
         public static int Index((uint Hashcode, Server Server)[] ring, uint hash)
